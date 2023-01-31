@@ -125,7 +125,7 @@ endif()
 # one for llvm+clang+... using the same sources.
 set(LLVM_ALL_PROJECTS "bolt;clang;clang-tools-extra;compiler-rt;cross-project-tests;libc;libclc;lld;lldb;mlir;openmp;polly;pstl")
 # The flang project is not yet part of "all" projects (see C++ requirements)
-set(LLVM_EXTRA_PROJECTS "flang")
+set(LLVM_EXTRA_PROJECTS "flang;p4lang")
 # List of all known projects in the mono repo
 set(LLVM_KNOWN_PROJECTS "${LLVM_ALL_PROJECTS};${LLVM_EXTRA_PROJECTS}")
 set(LLVM_ENABLE_PROJECTS "" CACHE STRING
@@ -148,6 +148,17 @@ if ("flang" IN_LIST LLVM_ENABLE_PROJECTS)
 
   if (NOT "clang" IN_LIST LLVM_ENABLE_PROJECTS)
     message(FATAL_ERROR "Clang is not enabled, but is required for the Flang driver")
+  endif()
+endif()
+
+if ("p4lang" IN_LIST LLVM_ENABLE_PROJECTS)
+  if (NOT "mlir" IN_LIST LLVM_ENABLE_PROJECTS)
+    message(STATUS "Enabling MLIR as a dependency to p4lang")
+    list(APPEND LLVM_ENABLE_PROJECTS "mlir")
+  endif()
+
+  if (NOT "clang" IN_LIST LLVM_ENABLE_PROJECTS)
+    message(FATAL_ERROR "Clang is not enabled, but is required for the p4lang driver")
   endif()
 endif()
 
